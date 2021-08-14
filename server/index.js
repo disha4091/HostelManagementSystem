@@ -1,18 +1,17 @@
-import Config_details from './config'
 const express = require('express') ;
+const mysql = require('mysql2') ;
 const app = express() ;
-const mysql = require('mysql') ;
 const cors = require('cors') ; 
-
+const Config_details = require('./config') ;
 app.use(cors()) ;
 app.use(express.json()) ;
 
 
 const db = {
     host: Config_details.host,
-    user: Config_details.root,
+    user: Config_details.user,
     password: Config_details.password,
-    database:Config_details.database,
+    database: Config_details.database,
     port: 3306,
     insecureAuth: true
 };
@@ -42,7 +41,7 @@ app.post('/create' , (req,res)=>{
         }
     }) ;
 
-})
+}) ;
 
 app.listen(3001, ()=>{
     console.log("Server running");

@@ -16,6 +16,7 @@
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "decrypt": "^0.0.1",
+    "express": "^4.17.1",
     "express-session": "^1.17.2",
     "mysql2": "^2.3.0"
   }

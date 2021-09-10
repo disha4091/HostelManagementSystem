@@ -1,14 +1,25 @@
+import React from 'react';
 import './App.css';
+import Navbar from './Navbar/Navbar'
 import RegisterPage from './RegisterPage/RegisterPage';
-import LoginPage from './LoginPage/LoginPage';
-
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { AuthContext,AuthProvider } from './auth';
 function App() {
  
   return (
     <div className="App">
-     <RegisterPage/>
-     <LoginPage/>
-    </div>
+        <AuthProvider>
+          <Router>
+            <Navbar/>
+            <Switch>
+              <Route path="/login" component={RegisterPage} />
+              
+            </Switch>
+            
+          </Router>
+        </AuthProvider>
+      </div>
+    
   );
 }
 

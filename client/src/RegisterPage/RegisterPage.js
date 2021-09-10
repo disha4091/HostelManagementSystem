@@ -1,26 +1,67 @@
 import React from 'react'
 import {useState, useEffect} from "react" ;
 import Axios from "axios" ;
+import { useHistory } from 'react-router-dom' ;
 import './style.css';
 
 const RegisterPage = () => {
-    const [UserId, setUserId] = useState(0) ;
     const [Username, setUsername] = useState("") ;
     const [Email, setEmail] = useState("") ;
-    const [Area_pin, setAreapin] = useState(0) ;
+    const [loginEmail, setLoginEmail] = useState("") ;
+    const [Area_pin, setAreapin] = useState("") ;
     const [Area, setArea] = useState("") ;
     const [City, setCity] = useState("") ;
     const [Password, setPassword] = useState("") ;
-  
+    const [Role, setRole] = useState("") ;
+    const [confirmPassword, setConfirmPassword] = useState("") ;
+    const [loginPassword, setLoginPassword] = useState("") ;
+    const history = useHistory();
+
+    const [loginStatus, setLoginStatus] = useState('') ;
+     const loginUser = async e =>{
+         await Axios.post('http://localhost:3001/login',
+         {Email:loginEmail, Password:loginPassword})
+         .then((response)=>{
+             if(response.data.message){
+                 setLoginStatus(response.data.message) ;
+             }
+             else{
+                 if(response.data.auth){
+                    localStorage.setItem("token", response.data.token);
+                    setLoginStatus(response.data.result[0].Username) ;
+                    history.push('/');
+                 }
+                 
+             }
+           //console.log(response);
+         }) ;
+       } ;
+
     Axios.defaults.withCredentials = true ;
     const addUser = () =>{
-      Axios.post('http://localhost:3001/register',
-      {UserId: UserId, Username: Username, Email:Email,Area_pin:Area_pin, Area:Area, City:City, Password:Password})
-      .then((response)=>{
-        console.log("success");
-      }) ;
+        if(Password != confirmPassword){
+            alert("Entered passwords do not match") ;
+        }
+        else{
+            Axios.post('http://localhost:3001/register',
+            {Role: Role, Username: Username, Email:Email,Area_pin:Area_pin, Area:Area, City:City, Password:Password})
+            .then((response)=>{
+              console.log("success");
+              
+            }) ;
+        }
+     
     } ;
 
+    const userAuthenticated = () =>{
+        Axios.get('http://localhost:3001/isUserAuth',{
+            headers: {
+                "x-access-token": localStorage.getItem("token"),
+            }
+        }).then((response)=>{
+            console.log(response);
+        })
+    }
     return (
           <div className="container">
     	<div className="myCard">
@@ -33,10 +74,12 @@ const RegisterPage = () => {
 
                                 <div className="form-group">
                                     <i className="fas fa-user"></i>
-                                   
-                                    <input type="number" className="myInput" placeholder="UserId"  value={UserId} onChange={(e) => {setUserId(e.target.value)}}/>
-                                    <div className="invalid-feedback">Please fill out this field.</div>
                                 </div>
+
+                            <div className="form-group">
+    						    <i className="fas fa-user"></i>
+                              <input type="text" className="myInput" placeholder="Role" value={Role} onChange={(e) => {setRole(e.target.value)}}/>
+                            </div>
 
                             <div className="form-group">
     							<i className="fas fa-user"></i>
@@ -52,7 +95,7 @@ const RegisterPage = () => {
                          {/* areapin */}
                           <div className="form-group">
                                     <i className="fas fa-user"></i>
-                                   <input type="number" className ="myInput" placeholder="AreaPIN" value={Area_pin} onChange={(e) => {setAreapin(e.target.value)}}/>
+                                   <input type="text" className ="myInput" placeholder="Area pincode" value={Area_pin} onChange={(e) => {setAreapin(e.target.value)}}/>
                                     <div class="invalid-feedback">Please fill out this field.</div>
                                 </div>
 
@@ -79,7 +122,7 @@ const RegisterPage = () => {
 
                             <div className="form-group">
                                 <i className="fas fa-lock"></i>
-                                <input className="myInput" type="text" placeholder="Confirm Password" onChange={(e) => {setPassword(e.target.value)}}/>
+                                <input className="myInput" type="text" placeholder="Confirm Password" onChange={(e) => {setConfirmPassword(e.target.value)}}/>
                             </div> 
 
                             <div className="form-group">
@@ -101,16 +144,17 @@ const RegisterPage = () => {
                       
                         <div className="form-group">
                             <i className="fas fa-envelope"></i>
-                            <input className="myInput" type="text" placeholder="Email" id="email" onChange={(e) => {setEmail(e.target.value)}}/>
+                            <input className="myInput" type="text" placeholder="Email" id="email" onChange={(e) => {setLoginEmail(e.target.value)}}/>
                         
                         </div>
                         
                         <div className="form-group">
                             <i className="fas fa-lock"></i>
-                            <input className="myInput" type="text" placeholder="Password" id="password" onChange={(e) => {setPassword(e.target.value)}}/>
+                            <input className="myInput" type="text" placeholder="Password" id="password" onChange={(e) => {setLoginPassword(e.target.value)}}/>
                         
                         </div>
-                      <input type="button" className="butt_out" value="Login"/> 
+                      <input type="button" className="butt_out" value="Login" onClick={loginUser}/> 
+                      <header>{loginStatus}</header>
                   </div>
                 </form>
 
